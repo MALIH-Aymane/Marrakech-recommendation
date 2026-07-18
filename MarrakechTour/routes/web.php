@@ -13,6 +13,38 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\LoginHistoryController;
 
+
+
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\File;
+
+Route::get('/storage/attractions/{filename}', function ($filename) {
+    // Filename is like "07e08b14-cd10-408f-a776-e05717795ff9.jpg"
+    // Extract the UUID (which is the filename without extension)
+    $uuid = pathinfo($filename, PATHINFO_FILENAME);
+    $dir = base_path('dataset/images/' . $uuid);
+
+    if (!File::exists($dir) || !File::isDirectory($dir)) {
+        abort(404);
+    }
+
+    // Retrieve all files in that UUID folder
+    $files = File::files($dir);
+    if (empty($files)) {
+        abort(404);
+    }
+
+    // Serve the first image file found in the directory
+    $path = $files[0]->getRealPath();
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+});
+
 Route::group([
     'prefix' => LaravelLocalization::setLocale(),
     'middleware' => [
@@ -96,14 +128,14 @@ Route::group([
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])
             ->name('notifications.readAll');
 
-        Route::get('/dashboard/login-history',[LoginHistoryController::class,'adminIndex'])
+        Route::get('/dashboard/login-history', [LoginHistoryController::class, 'adminIndex'])
             ->name('dashboard.login-history');
 
         Route::get('/dashboard/login-history', [LoginHistoryController::class, 'dashboard'])
-           ->name('dashboard.login-history');
+            ->name('dashboard.login-history');
 
         Route::get('/dashboard/login-history', [LoginHistoryController::class, 'adminIndex'])
-           ->name('dashboard.login.history');
+            ->name('dashboard.login.history');
 
         /*
         | Utilisateurs

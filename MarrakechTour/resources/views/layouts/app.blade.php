@@ -32,10 +32,7 @@ body{
 }
 
 .navbar{
-    background:#A45A2A;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    background:#A45A2A !important;
     padding:12px 35px;
     box-shadow:0 4px 15px rgba(0,0,0,.12);
 }
@@ -77,6 +74,7 @@ body{
     padding:8px 15px;
     border-radius:30px;
     transition:.3s;
+    display:inline-block;
 }
 
 .nav-link-custom:hover{
@@ -87,6 +85,23 @@ body{
 .nav-link-custom.active{
     background:white;
     color:#A45A2A;
+}
+
+@media (max-width: 991.98px) {
+    .navbar {
+        padding: 12px 20px;
+    }
+    .nav-right {
+        flex-direction: column;
+        align-items: stretch !important;
+        width: 100%;
+        gap: 10px !important;
+        margin-top: 15px;
+    }
+    .nav-link-custom {
+        display: block;
+        width: 100%;
+    }
 }
 
 main{
@@ -121,161 +136,106 @@ body{
 </style>
 @endif
 @unless(request()->routeIs('login') || request()->routeIs('register'))
-<nav class="navbar">
-
-<div class="nav-left">
-
-<img src="{{ asset('images/logo.png') }}" class="brand-logo">
-
-<div class="brand-text">
-<h1>Marrakech Tour</h1>
-<p>Explore • Discover • Enjoy</p>
-</div>
-
-</div>
-
-<div class="nav-right">
-
-    <a href="{{ LaravelLocalization::localizeUrl(route('home', [], false)) }}"
-       class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}">
-        <i class="bi bi-house-fill"></i>
-       {{ __('navbar.home') }}
-    </a>
-
-    <a href="{{ LaravelLocalization::localizeUrl(route('attractions.index', [], false)) }}"
-       class="nav-link-custom {{ request()->routeIs('attractions.*') ? 'active' : '' }}">
-        <i class="bi bi-geo-alt-fill"></i>
-      {{ __('navbar.attractions') }}
-    </a>
-   @auth
-
-<a href="{{ route('profile.edit') }}"
-   class="nav-link-custom {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-    <i class="bi bi-person-circle"></i>
-    {{ __('navbar.profile') }}
-</a>
-
-@endauth
-    @guest
-
-        <a href="{{ route('login') }}" class="nav-link-custom">
-            <i class="bi bi-box-arrow-in-right"></i>
-          {{ __('navbar.login') }}
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid px-0">
+        <a class="nav-left navbar-brand d-flex align-items-center text-decoration-none" href="{{ LaravelLocalization::localizeUrl(route('home', [], false)) }}">
+            <img src="{{ asset('images/logo.png') }}" class="brand-logo" alt="Logo">
+            <div class="brand-text ms-2">
+                <h1 class="mb-0 text-white" style="font-size: 24px;">Marrakech Tour</h1>
+                <p class="mb-0" style="color: #F7DFA7; font-size: 11px;">Explore • Discover • Enjoy</p>
+            </div>
         </a>
- @endguest
- <div class="dropdown">
 
-    <button
-        class="btn btn-outline-light btn-sm dropdown-toggle"
-        type="button"
-        data-bs-toggle="dropdown">
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#marrakechNavbar" aria-controls="marrakechNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        🌐 {{ strtoupper(app()->getLocale()) }}
+        <div class="collapse navbar-collapse" id="marrakechNavbar">
+            <div class="nav-right ms-auto d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 mt-3 mt-lg-0">
+                <a href="{{ LaravelLocalization::localizeUrl(route('home', [], false)) }}"
+                   class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <i class="bi bi-house-fill"></i>
+                    {{ __('navbar.home') }}
+                </a>
 
-    </button>
+                <a href="{{ LaravelLocalization::localizeUrl(route('attractions.index', [], false)) }}"
+                   class="nav-link-custom {{ request()->routeIs('attractions.*') ? 'active' : '' }}">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    {{ __('navbar.attractions') }}
+                </a>
 
-    <ul class="dropdown-menu dropdown-menu-end">
+                @auth
+                <a href="{{ route('profile.edit') }}"
+                   class="nav-link-custom {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-circle"></i>
+                    {{ __('navbar.profile') }}
+                </a>
+                @endauth
 
-        <li>
-            <a class="dropdown-item"
-               href="{{ LaravelLocalization::getLocalizedURL('fr', null, [], true) }}">
-                🇫🇷 Français
-            </a>
-        </li>
+                @guest
+                <a href="{{ route('login') }}" class="nav-link-custom">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    {{ __('navbar.login') }}
+                </a>
+                @endguest
 
-        <li>
-            <a class="dropdown-item"
-               href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
-                🇬🇧 English
-            </a>
-        </li>
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle w-100 text-start text-lg-center" type="button" data-bs-toggle="dropdown">
+                        🌐 {{ strtoupper(app()->getLocale()) }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                            <a class="dropdown-item" href="{{ LaravelLocalization::getLocalizedURL('fr', null, [], true) }}">
+                                🇫🇷 Français
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
+                                🇬🇧 English
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ LaravelLocalization::getLocalizedURL('ar', null, [], true) }}">
+                                🇲🇦 العربية
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-        <li>
-            <a class="dropdown-item"
-               href="{{ LaravelLocalization::getLocalizedURL('ar', null, [], true) }}">
-                🇲🇦 العربية
-            </a>
-        </li>
-
-    </ul>
-
-</div>
-   @auth
-
-<div class="dropdown">
-
-    <button
-        class="btn btn-outline-light dropdown-toggle"
-        type="button"
-        data-bs-toggle="dropdown">
-
-        <i class="bi bi-person-circle"></i>
-
-        {{ auth()->user()->name }}
-
-    </button>
-
-    <ul class="dropdown-menu dropdown-menu-end">
-
-        @role('Admin')
-
-        <li>
-
-            <a class="dropdown-item"
-               href="{{ route('dashboard') }}">
-
-                <i class="bi bi-speedometer2"></i>
-
-                Dashboard
-
-            </a>
-
-        </li>
-
-        @endrole
-
-        <li>
-
-            <a class="dropdown-item"
-               href="{{ route('profile.edit') }}">
-
-                <i class="bi bi-person"></i>
-
-                {{ __('navbar.profile') }}
-
-            </a>
-
-        </li>
-
-        <li><hr class="dropdown-divider"></li>
-
-        <li>
-
-            <form action="{{ route('logout') }}"
-                  method="POST">
-
-                @csrf
-
-                <button
-                    class="dropdown-item">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    {{ __('navbar.logout') }}
-
-                </button>
-
-            </form>
-
-        </li>
-
-    </ul>
-
-</div>
-
-@endauth
-
-</div>
+                @auth
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle w-100 text-start text-lg-center" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        {{ auth()->user()->name }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        @role('Admin')
+                        <li>
+                            <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        @endrole
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                <i class="bi bi-person"></i> {{ __('navbar.profile') }}
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> {{ __('navbar.logout') }}
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+                @endauth
+            </div>
+        </div>
+    </div>
 </nav>
 @endunless
 <main
