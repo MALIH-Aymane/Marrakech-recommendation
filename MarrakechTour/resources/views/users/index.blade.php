@@ -194,213 +194,215 @@
 
             </form>
 
-            <table class="table table-hover align-middle">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
 
-                <thead class="table-warning">
+                    <thead class="table-warning">
 
-                    <tr>
+                        <tr>
 
-                        <th width="70">Avatar</th>
+                            <th width="70">Avatar</th>
 
-                        <th>Nom</th>
+                            <th>Nom</th>
 
-                        <th>Email</th>
+                            <th>Email</th>
 
-                        <th width="120">Rôle</th>
+                            <th width="120">Rôle</th>
 
-                        <th width="180">Inscription</th>
+                            <th width="180">Inscription</th>
 
-                        <th width="220" class="text-center">
+                            <th width="220" class="text-center">
 
-                            Actions
+                                Actions
 
-                        </th>
+                            </th>
 
-                    </tr>
+                        </tr>
 
-                </thead>
+                    </thead>
 
-                <tbody>
+                    <tbody>
 
-                    @forelse($users as $user)
-                    <tr>
+                        @forelse($users as $user)
+                        <tr>
 
-    <td>
+        <td>
 
-        <div class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center fw-bold"
-             style="width:45px;height:45px;">
+            <div class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center fw-bold"
+                 style="width:45px;height:45px;">
 
-            {{ collect(explode(' ', $user->name))
-                ->map(fn($word)=>strtoupper(substr($word,0,1)))
-                ->take(2)
-                ->implode('') }}
+                {{ collect(explode(' ', $user->name))
+                    ->map(fn($word)=>strtoupper(substr($word,0,1)))
+                    ->take(2)
+                    ->implode('') }}
 
-        </div>
+            </div>
 
-    </td>
+        </td>
 
-    <td>
+        <td>
 
-        <strong>
+            <strong>
 
-            {{ $user->name }}
+                {{ $user->name }}
 
-        </strong>
+            </strong>
 
-    </td>
+        </td>
 
-    <td>
+        <td>
 
-        {{ $user->email }}
+            {{ $user->email }}
 
-    </td>
+        </td>
 
-    <td>
+        <td>
 
-        @if($user->hasRole('Admin'))
+            @if($user->hasRole('Admin'))
 
-            <span class="badge bg-danger">
+                <span class="badge bg-danger">
 
-                Admin
+                    Admin
 
-            </span>
-
-        @else
-
-            <span class="badge bg-primary">
-
-                User
-
-            </span>
-
-        @endif
-
-    </td>
-
-    <td>
-
-        <div class="fw-semibold">
-
-            {{ $user->created_at->format('d/m/Y') }}
-
-        </div>
-
-        <small class="text-muted">
-
-            {{ $user->created_at->format('H:i') }}
-
-        </small>
-
-    </td>
-
-    <td class="text-center">
-
-        <!-- Voir -->
-
-        <button
-    type="button"
-    class="btn btn-info btn-sm view-user"
-
-    data-id="{{ $user->id }}"
-    data-name="{{ $user->name }}"
-    data-email="{{ $user->email }}"
-    data-role="{{ $user->hasRole('Admin') ? 'Administrateur' : 'Utilisateur' }}"
-    data-role-type="{{ $user->hasRole('Admin') ? 'Admin' : 'User' }}"
-    data-date="{{ $user->created_at->format('d/m/Y') }}"
-    data-time="{{ $user->created_at->format('H:i') }}">
-
-    <i class="bi bi-eye-fill"></i>
-
-</button>
-
-        <!-- Changer le rôle -->
-
-        <form action="{{ route('users.role', $user) }}"
-              method="POST"
-              class="d-inline">
-
-            @csrf
-            @method('PATCH')
-
-            @if(auth()->id() != $user->id)
-
-                <button type="button" class="btn btn-warning btn-sm edit-role" data-bs-toggle="modal" data-bs-target="#roleModal"
-                   data-id="{{ $user->id }}"
-                   data-name="{{ $user->name }}"
-                   data-role="{{ $user->hasRole('Admin') ? 'Admin' : 'User' }}">
-                       <i class="bi bi-arrow-repeat"></i>
-
-                </button>
+                </span>
 
             @else
 
-                <button
-                    class="btn btn-secondary btn-sm"
-                    disabled
-                    title="Vous ne pouvez pas modifier votre propre rôle">
+                <span class="badge bg-primary">
 
-                    <i class="bi bi-lock-fill"></i>
+                    User
 
-                </button>
+                </span>
 
             @endif
 
-        </form>
+        </td>
 
-        <!-- Supprimer -->
+        <td>
 
-        @if(auth()->id() != $user->id)
+            <div class="fw-semibold">
 
-        <form action="{{ route('users.destroy', $user) }}"
-              method="POST"
-              class="d-inline"
-              onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                {{ $user->created_at->format('d/m/Y') }}
 
-            @csrf
-            @method('DELETE')
+            </div>
 
-           <button type="button" class="btn btn-danger btn-sm delete-user"data-bs-toggle="modal" data-bs-target="#deleteModal"
-                data-id="{{ $user->id }}" data-name="{{ $user->name }}">
+            <small class="text-muted">
 
-             <i class="bi bi-trash-fill"></i>
+                {{ $user->created_at->format('H:i') }}
+
+            </small>
+
+        </td>
+
+        <td class="text-center">
+
+            <!-- Voir -->
+
+            <button
+        type="button"
+        class="btn btn-info btn-sm view-user"
+
+        data-id="{{ $user->id }}"
+        data-name="{{ $user->name }}"
+        data-email="{{ $user->email }}"
+        data-role="{{ $user->hasRole('Admin') ? 'Administrateur' : 'Utilisateur' }}"
+        data-role-type="{{ $user->hasRole('Admin') ? 'Admin' : 'User' }}"
+        data-date="{{ $user->created_at->format('d/m/Y') }}"
+        data-time="{{ $user->created_at->format('H:i') }}">
+
+        <i class="bi bi-eye-fill"></i>
+
+    </button>
+
+            <!-- Changer le rôle -->
+
+            <form action="{{ route('users.role', $user) }}"
+                  method="POST"
+                  class="d-inline">
+
+                @csrf
+                @method('PATCH')
+
+                @if(auth()->id() != $user->id)
+
+                    <button type="button" class="btn btn-warning btn-sm edit-role" data-bs-toggle="modal" data-bs-target="#roleModal"
+                       data-id="{{ $user->id }}"
+                       data-name="{{ $user->name }}"
+                       data-role="{{ $user->hasRole('Admin') ? 'Admin' : 'User' }}">
+                           <i class="bi bi-arrow-repeat"></i>
+
+                    </button>
+
+                @else
+
+                    <button
+                        class="btn btn-secondary btn-sm"
+                        disabled
+                        title="Vous ne pouvez pas modifier votre propre rôle">
+
+                        <i class="bi bi-lock-fill"></i>
+
+                    </button>
+
+                @endif
+
+            </form>
+
+            <!-- Supprimer -->
+
+            @if(auth()->id() != $user->id)
+
+            <form action="{{ route('users.destroy', $user) }}"
+                  method="POST"
+                  class="d-inline"
+                  onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+
+                @csrf
+                @method('DELETE')
+
+               <button type="button" class="btn btn-danger btn-sm delete-user"data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    data-id="{{ $user->id }}" data-name="{{ $user->name }}">
+
+                 <i class="bi bi-trash-fill"></i>
+
+                </button>
+
+            </form>
+
+            @else
+
+            <button
+                class="btn btn-secondary btn-sm"
+                disabled
+                title="Impossible de supprimer votre compte">
+
+                <i class="bi bi-lock-fill"></i>
 
             </button>
 
-        </form>
+            @endif
 
-        @else
+        </td>
 
-        <button
-            class="btn btn-secondary btn-sm"
-            disabled
-            title="Impossible de supprimer votre compte">
+    </tr>
+    @empty
 
-            <i class="bi bi-lock-fill"></i>
+    <tr>
 
-        </button>
+        <td colspan="6" class="text-center py-4">
 
-        @endif
+            Aucun utilisateur trouvé.
 
-    </td>
+        </td>
 
-</tr>
-@empty
+    </tr>
 
-<tr>
+    @endforelse
 
-    <td colspan="6" class="text-center py-4">
+    </tbody>
 
-        Aucun utilisateur trouvé.
-
-    </td>
-
-</tr>
-
-@endforelse
-
-</tbody>
-
-</table>
+    </table>
+</div>
 
 <div class="mt-4">
 

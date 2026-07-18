@@ -15,58 +15,60 @@
 
         <div class="card-body">
 
-            <table class="table table-hover align-middle">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
 
-                <thead class="table-warning">
+                    <thead class="table-warning">
 
-                    <tr>
-                        <th>Utilisateur</th>
-                        <th>Email</th>
-                        <th>IP</th>
-                        <th>Navigateur</th>
-                        <th>Système</th>
-                        <th>Date</th>
-                    </tr>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Email</th>
+                            <th>IP</th>
+                            <th>Navigateur</th>
+                            <th>Système</th>
+                            <th>Date</th>
+                        </tr>
 
-                </thead>
+                    </thead>
 
-                <tbody>
+                    <tbody>
 
-                @forelse($histories as $history)
+                    @forelse($histories as $history)
 
-                    <tr>
+                        <tr>
 
-                        <td>{{ $history->user->name }}</td>
+                            <td>{{ $history->user->name }}</td>
 
-                        <td>{{ $history->user->email }}</td>
+                            <td>{{ $history->user->email }}</td>
 
-                        <td>{{ $history->ip_address }}</td>
+                            <td>{{ $history->ip_address }}</td>
 
-                        <td>{{ $history->browser }}</td>
+                            <td>{{ $history->browser }}</td>
 
-                        <td>{{ $history->platform }}</td>
+                            <td>{{ $history->platform }}</td>
 
-                        <td>{{ $history->login_at }}</td>
+                            <td>{{ $history->login_at }}</td>
 
-                    </tr>
+                        </tr>
 
-                @empty
+                    @empty
 
-                    <tr>
+                        <tr>
 
-                        <td colspan="6" class="text-center">
+                            <td colspan="6" class="text-center">
 
-                            Aucun historique.
+                                Aucun historique.
 
-                        </td>
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                @endforelse
+                    @endforelse
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
+            </div>
 
             {{ $histories->links() }}
 

@@ -78,10 +78,10 @@
         @foreach($attractions as $attraction)
 
 
-        <div class="col-md-4">
+        <div class="col-md-4 d-flex">
 
 
-            <div class="card feature-card h-100 shadow">
+            <div class="card feature-card h-100 w-100 shadow">
 
 
                 @if($attraction->photo)

@@ -55,154 +55,156 @@
 
         <div class="card-body">
 
-            <table class="table table-hover align-middle">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
 
-                <thead style="background:#A0522D;color:white;">
+                    <thead style="background:#A0522D;color:white;">
 
-<tr>
-    <th style="width:120px;">{{ __('attractions.photo') }}</th>
+    <tr>
+        <th style="width:120px;">{{ __('attractions.photo') }}</th>
 
-    <th style="width:240px;">
-        {{ __('attractions.name') }}
-    </th>
+        <th style="width:240px;">
+            {{ __('attractions.name') }}
+        </th>
 
-    <th style="width:90px;">
-        {{ __('attractions.rating') }}
-    </th>
+        <th style="width:90px;">
+            {{ __('attractions.rating') }}
+        </th>
 
-    <th style="width:160px;">
-        {{ __('attractions.type') }}
-    </th>
+        <th style="width:160px;">
+            {{ __('attractions.type') }}
+        </th>
 
-    <th>
-          {{ __('attractions.description') }}
-    </th>
+        <th>
+              {{ __('attractions.description') }}
+        </th>
 
-    <th style="width:140px;" class="text-center">
-        {{ __('attractions.actions') }}
-    </th>
-</tr>
+        <th style="width:140px;" class="text-center">
+            {{ __('attractions.actions') }}
+        </th>
+    </tr>
 
-</thead>
+    </thead>
 
-                <tbody>
+                    <tbody>
 
-                @forelse($attractions as $attraction)
+                    @forelse($attractions as $attraction)
 
-                    <tr>
+                        <tr>
 
-    <td width="120">
+        <td width="120">
 
-        @if($attraction->photo)
+            @if($attraction->photo)
 
-            <img
-                src="{{ asset('storage/'.$attraction->photo) }}"
-                width="100"
-                height="70"
-                class="rounded shadow-sm"
-                style="object-fit:cover;">
+                <img
+                    src="{{ asset('storage/'.$attraction->photo) }}"
+                    width="100"
+                    height="70"
+                    class="rounded shadow-sm"
+                    style="object-fit:cover;">
 
-        @else
+            @else
 
-            <span class="text-muted">
+                <span class="text-muted">
 
-              {{ __('attractions.no_image') }}
-            </span>
+                  {{ __('attractions.no_image') }}
+                </span>
 
-        @endif
+            @endif
 
-    </td>
+        </td>
 
-    <td style="max-width:240px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+        <td style="max-width:240px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
 
-    <strong title="{{ $attraction->attraction }}">
+        <strong title="{{ $attraction->attraction }}">
 
-        {{ \Illuminate\Support\Str::limit($attraction->attraction, 25) }}
+            {{ \Illuminate\Support\Str::limit($attraction->attraction, 25) }}
 
-    </strong>
-
-</td>
-
-    <td style="white-space: nowrap; width:90px;">
-
-    ⭐ {{ number_format($attraction->rate,1) }}
-
-</td>
-
-   <td style="width:160px;" class="align-middle">
-
-    <span class="badge bg-warning text-dark">
-
-        {{ $attraction->type }}
-
-    </span>
-
-</td>
-
-    <td width="350">
-
-        {{ Str::limit(strip_tags($attraction->details),120) }}
+        </strong>
 
     </td>
 
-    <td style="width:140px;" class="text-center">
+        <td style="white-space: nowrap; width:90px;">
 
-    <div class="d-flex justify-content-center align-items-center gap-2">
+        ⭐ {{ number_format($attraction->rate,1) }}
 
-        <a href="{{ route('attractions.show',$attraction->id) }}"
-   class="btn btn-info btn-sm">
-    <i class="bi bi-eye-fill"></i>
-</a>
+    </td>
 
-@role('Admin')
+       <td style="width:160px;" class="align-middle">
 
-<a href="{{ route('attractions.edit',$attraction->id) }}"
-   class="btn btn-warning btn-sm">
-    <i class="bi bi-pencil-fill"></i>
-</a>
+        <span class="badge bg-warning text-dark">
 
-<form action="{{ route('attractions.destroy',$attraction->id) }}"
-      method="POST"
-      class="d-inline">
+            {{ $attraction->type }}
 
-    @csrf
-    @method('DELETE')
+        </span>
 
-    <button
-       onclick="return confirm('{{ __('attractions.delete_confirm') }}')"
-        class="btn btn-danger btn-sm">
+    </td>
 
-        <i class="bi bi-trash-fill"></i>
+        <td width="350">
 
-    </button>
+            {{ Str::limit(strip_tags($attraction->details),120) }}
 
-</form>
+        </td>
 
-@endrole
+        <td style="width:140px;" class="text-center">
 
-    </div>
+        <div class="d-flex justify-content-center align-items-center gap-2">
 
-</td>
+            <a href="{{ route('attractions.show',$attraction->id) }}"
+       class="btn btn-info btn-sm">
+        <i class="bi bi-eye-fill"></i>
+    </a>
 
-</tr>
+    @role('Admin')
 
-                @empty
+    <a href="{{ route('attractions.edit',$attraction->id) }}"
+       class="btn btn-warning btn-sm">
+        <i class="bi bi-pencil-fill"></i>
+    </a>
 
-                    <tr>
+    <form action="{{ route('attractions.destroy',$attraction->id) }}"
+          method="POST"
+          class="d-inline">
 
-                        <td colspan="6" class="text-center py-4">
+        @csrf
+        @method('DELETE')
 
-                          {{ __('attractions.empty') }}
+        <button
+           onclick="return confirm('{{ __('attractions.delete_confirm') }}')"
+            class="btn btn-danger btn-sm">
 
-                        </td>
+            <i class="bi bi-trash-fill"></i>
 
-                    </tr>
+        </button>
 
-                @endforelse
+    </form>
 
-                </tbody>
+    @endrole
 
-            </table>
+        </div>
+
+    </td>
+
+    </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td colspan="6" class="text-center py-4">
+
+                              {{ __('attractions.empty') }}
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                    </tbody>
+
+                </table>
+            </div>
 
         </div>
 

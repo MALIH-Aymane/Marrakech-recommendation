@@ -2,6 +2,7 @@
 
 @section('title', __('navbar.attractions'))
 
+
 @section('content')
 
 <div class="container py-5">
@@ -22,9 +23,9 @@
 
         @forelse($attractions as $attraction)
 
-            <div class="col-lg-4 col-md-6">
+            <div class="col-12 col-sm-6 col-lg-4 d-flex">
 
-                <div class="card border-0 shadow feature-card h-100">
+                <div class="card border-0 shadow feature-card h-100 w-100">
 
                     @if($attraction->photo)
 
@@ -44,11 +45,11 @@
 
                     <div class="card-body d-flex flex-column">
 
-                        <h4 class="fw-bold">
+                        <h4 class="fw-bold attraction-title">
 
-                            {{ $attraction->attraction }}
+                                   {{ $attraction->attraction }}
 
-                        </h4>
+                                </h4>
 
                         <div class="mb-3">
 
@@ -78,7 +79,7 @@
 
 @if($details && \Illuminate\Support\Str::length($details) > 15)
 
-    <p class="text-muted flex-grow-1 mb-3">
+   <p class="text-muted attraction-description flex-grow-1 mb-3">
 
         {{ \Illuminate\Support\Str::limit($details,120) }}
 
@@ -128,9 +129,9 @@
 
 .feature-card{
 
-    transition:.35s;
     border-radius:20px;
-
+    transition:.35s;
+    overflow:hidden;
 }
 
 .feature-card:hover{
@@ -142,6 +143,8 @@
 
 .feature-card img{
 
+    height:240px;
+    object-fit:cover;
     transition:.5s;
 
 }
@@ -149,6 +152,23 @@
 .feature-card:hover img{
 
     transform:scale(1.05);
+
+}
+
+.attraction-title{
+
+    min-height:65px;
+    display:flex;
+    align-items:center;
+    font-size:1.65rem;
+    line-height:1.3;
+
+}
+
+.attraction-description{
+
+    min-height:55px;
+    font-size:.95rem;
 
 }
 
@@ -162,6 +182,63 @@
 .btn-warning:hover{
 
     background:#8B4513;
+
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width:992px){
+
+    .feature-card img{
+
+        height:220px;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .feature-card img{
+
+        height:210px;
+
+    }
+
+    .attraction-title{
+
+        min-height:auto;
+        font-size:1.45rem;
+
+    }
+
+    .attraction-description{
+
+        min-height:auto;
+
+    }
+
+}
+
+@media (max-width:576px){
+
+    .feature-card{
+
+        border-radius:18px;
+
+    }
+
+    .feature-card img{
+
+        height:200px;
+
+    }
+
+    .btn{
+
+        font-size:.95rem;
+
+    }
 
 }
 

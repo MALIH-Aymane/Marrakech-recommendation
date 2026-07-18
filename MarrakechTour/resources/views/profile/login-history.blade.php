@@ -42,81 +42,83 @@
 
             @if($histories->count())
 
-                <table class="table table-hover align-middle">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
 
-                    <thead class="table-light">
+                        <thead class="table-light">
 
-                        <tr>
+                            <tr>
 
-                            <th>{{ __('login_history.date') }}</th>
+                                <th>{{ __('login_history.date') }}</th>
 
-                            <th>{{ __('login_history.browser') }}</th>
+                                <th>{{ __('login_history.browser') }}</th>
 
-                            <th>{{ __('login_history.platform') }}</th>
+                                <th>{{ __('login_history.platform') }}</th>
 
-                            <th>{{ __('login_history.ip') }}</th>
+                                <th>{{ __('login_history.ip') }}</th>
 
-                            <th>{{ __('login_history.user') }}</th>
+                                <th>{{ __('login_history.user') }}</th>
 
-                        </tr>
+                            </tr>
 
-                    </thead>
+                        </thead>
 
-                    <tbody>
+                        <tbody>
 
-                        @foreach($histories as $history)
+                            @foreach($histories as $history)
 
-                        <tr>
+                            <tr>
 
-                            <td>
+                                <td>
 
-                                {{ \Carbon\Carbon::parse($history->login_at)->format('d/m/Y H:i') }}
+                                    {{ \Carbon\Carbon::parse($history->login_at)->format('d/m/Y H:i') }}
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                <span class="badge bg-primary">
+                                    <span class="badge bg-primary">
 
-                                    {{ $history->browser }}
+                                        {{ $history->browser }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                <span class="badge bg-success">
+                                    <span class="badge bg-success">
 
-                                    {{ $history->platform }}
+                                        {{ $history->platform }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                {{ $history->ip_address }}
+                                    {{ $history->ip_address }}
 
-                            </td>
+                                </td>
 
-                            <td style="max-width:350px;">
+                                <td style="max-width:350px;">
 
-                                <small class="text-muted">
+                                    <small class="text-muted">
 
-                                    {{ \Illuminate\Support\Str::limit($history->user_agent,70) }}
+                                        {{ \Illuminate\Support\Str::limit($history->user_agent,70) }}
 
-                                </small>
+                                    </small>
 
-                            </td>
+                                </td>
 
-                        </tr>
+                            </tr>
 
-                        @endforeach
+                            @endforeach
 
-                    </tbody>
+                        </tbody>
 
-                </table>
+                    </table>
+                </div>
 
                 <div class="mt-4">
 

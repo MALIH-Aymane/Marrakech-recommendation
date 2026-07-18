@@ -115,7 +115,16 @@ footer{
     padding:20px;
     margin-top:60px;
 }
+html,
+body{
+    width:100%;
+    overflow-x:hidden;
+}
 
+.container{
+    width:100%;
+    max-width:1320px;
+}
     </style>
 
 </head>
@@ -283,6 +292,45 @@ if(input){
     });
 
 }
+
+function resizeCards(){
+
+    const cards = document.querySelectorAll(".feature-card");
+
+    cards.forEach(card=>{
+
+        card.style.height="";
+
+    });
+
+    if(window.innerWidth >= 576){
+
+        let max = 0;
+
+        cards.forEach(card=>{
+
+            if(card.offsetHeight > max){
+
+                max = card.offsetHeight;
+
+            }
+
+        });
+
+        cards.forEach(card=>{
+
+            card.style.height = max + "px";
+
+        });
+
+    }
+
+}
+
+window.addEventListener("load", resizeCards);
+
+window.addEventListener("resize", resizeCards);
+
 
 </script>
 </body>
