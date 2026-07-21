@@ -2,22 +2,34 @@
 
 @section('title', __('navbar.attractions'))
 
-
 @section('content')
 
 <div class="container py-5">
 
-    <div class="text-center mb-5">
+  <div class="attractions-header mb-5">
 
-        <h2 class="fw-bold" style="color:#8B4513;">
+    <div class="header-text">
+
+        <h2 class="fw-bold mb-2" style="color:#8B4513;">
             {{ __('attractions.title') }}
         </h2>
 
-        <p class="text-muted">
+        <p class="text-muted mb-0">
             {{ __('attractions.subtitle') }}
         </p>
 
     </div>
+
+    <a href="{{ route('find.attraction') }}"
+       class="btn btn-find rounded-pill px-4 py-3">
+
+        <i class="bi bi-stars me-2"></i>
+
+        {{ __('find_attraction.title') }}
+
+    </a>
+
+</div>
 
     <div class="row g-4">
 
@@ -119,9 +131,13 @@
 
             </div>
 
-        @endforelse
+              @endforelse
 
     </div>
+
+   <div class="pagination-wrapper">
+    {{ $attractions->links() }}
+</div>
 
 </div>
 
@@ -242,6 +258,167 @@
 
 }
 
+.pagination-wrapper nav{
+    display:flex;
+    justify-content:center;
+}
+
+.pagination{
+    gap:10px;
+    margin:0;
+}
+
+.pagination .page-item .page-link{
+    border:none;
+    border-radius:12px;
+    min-width:45px;
+    height:45px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    color:#8B4513;
+    font-weight:600;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.pagination .page-item .page-link:hover{
+    background:#C96A2B;
+    color:#fff;
+    transform:translateY(-2px);
+}
+
+.pagination .page-item.active .page-link{
+    background:#8B4513;
+    color:#fff;
+    box-shadow:0 6px 16px rgba(139,69,19,.35);
+}
+
+.pagination .page-item.disabled .page-link{
+    background:#f3f3f3;
+    color:#aaa;
+    box-shadow:none;
+}
+
+@media (max-width:768px){
+
+    .pagination{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .pagination .page-link{
+        min-width:38px;
+        height:38px;
+        font-size:.9rem;
+    }
+
+}
+
+.btn-find{
+
+    background:linear-gradient(135deg,#C96A2B,#8B4513);
+    color:white;
+    border:none;
+    font-weight:600;
+    transition:.35s;
+    box-shadow:0 8px 22px rgba(139,69,19,.25);
+
+}
+
+.btn-find:hover{
+
+    color:white;
+    transform:translateY(-4px);
+    box-shadow:0 14px 30px rgba(139,69,19,.35);
+
+}
+
+.btn-find i{
+
+    font-size:1.1rem;
+
+}
+@media (max-width:768px){
+
+    .d-flex.justify-content-between{
+
+        text-align:center;
+        justify-content:center !important;
+
+    }
+
+    .btn-find{
+
+        width:100%;
+
+    }
+
+}
+.attractions-header{
+
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:3rem;
+
+}
+
+.header-text{
+
+    text-align:center;
+
+    transform:translateX(-80px);
+
+}
+
+.btn-find{
+
+    position:absolute;
+    right:0;
+
+    background:linear-gradient(135deg,#C96A2B,#8B4513);
+    color:white;
+    border:none;
+    font-weight:600;
+    border-radius:50px;
+    transition:.35s;
+    box-shadow:0 8px 22px rgba(139,69,19,.25);
+
+}
+
+.btn-find:hover{
+
+    color:white;
+    transform:translateY(-3px);
+    box-shadow:0 14px 30px rgba(139,69,19,.35);
+
+}
+
+@media (max-width:992px){
+
+    .attractions-header{
+
+        flex-direction:column;
+
+    }
+
+    .header-text{
+
+        transform:none;
+        margin-bottom:20px;
+
+    }
+
+    .btn-find{
+
+        position:static;
+
+    }
+
+}
 </style>
 
 @endsection

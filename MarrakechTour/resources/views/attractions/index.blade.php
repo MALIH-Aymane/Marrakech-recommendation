@@ -206,8 +206,12 @@
                 </table>
             </div>
 
-        </div>
+                </div>
 
+    </div>
+
+    <div class="d-flex justify-content-center mt-4 mb-3">
+        {{ $attractions->links() }}
     </div>
 
 </div>

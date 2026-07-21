@@ -67,10 +67,12 @@
 
                     </tbody>
 
-                </table>
+                                </table>
             </div>
 
-            {{ $histories->links() }}
+            <div class="d-flex justify-content-center mt-4">
+                {{ $histories->withQueryString()->links() }}
+            </div>
 
         </div>
 
@@ -79,3 +81,15 @@
 </div>
 
 @endsection
+<style>
+
+.pagination{
+    margin-bottom:0;
+}
+
+.pagination .page-link{
+    border:none;
+    border-radius:10px;
+}
+
+</style>

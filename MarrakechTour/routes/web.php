@@ -69,6 +69,17 @@ Route::group([
     Route::get('/attractions/{attraction}', [AttractionController::class, 'show'])
         ->name('attractions.show');
 
+   Route::get('/find-attraction', function () {
+
+    $recommendations = collect();
+
+    return view('attractions.find', compact('recommendations'));
+
+})->name('find.attraction.page');
+
+Route::post('/find-attraction', [AttractionController::class, 'find'])
+    ->name('find.attraction');
+
     /*
     |--------------------------------------------------------------------------
     | Authentification

@@ -12,19 +12,20 @@ class LoginHistoryController extends Controller
      * de l'utilisateur connecté.
      */
     public function index()
-    {
-        $histories = auth()->user()
-            ->loginHistories()
-            ->latest('login_at')
-            ->paginate(10);
-
-        return view('profile.login-history', compact('histories'));
-    }
-    public function adminIndex()
 {
-    $histories = \App\Models\LoginHistory::with('user')
+    $histories = auth()->user()
+        ->loginHistories()
         ->latest('login_at')
-        ->paginate(15);
+        ->paginate(12);
+
+    return view('profile.login-history', compact('histories'));
+}
+
+public function adminIndex()
+{
+    $histories = LoginHistory::with('user')
+        ->latest('login_at')
+        ->paginate(12);
 
     return view('dashboard.login-history', compact('histories'));
 }

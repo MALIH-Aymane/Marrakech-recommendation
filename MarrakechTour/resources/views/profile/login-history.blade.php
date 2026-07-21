@@ -120,12 +120,9 @@
                     </table>
                 </div>
 
-                <div class="mt-4">
-
-                    {{ $histories->links() }}
-
+                <div class="d-flex justify-content-center mt-4 mb-2">
+                         {{ $histories->links() }}
                 </div>
-
             @else
 
                 <div class="alert alert-info text-center">
@@ -145,3 +142,26 @@
 </div>
 
 @endsection
+<style>
+
+.table tbody tr:hover{
+    background:#fff8ef;
+}
+
+.pagination{
+    margin-bottom:0;
+}
+
+.pagination .page-link{
+    border:none;
+    border-radius:12px;
+    margin:0 4px;
+    padding:8px 14px;
+    transition:.3s;
+}
+
+.pagination .page-link:hover{
+    transform:translateY(-2px);
+}
+
+</style>
