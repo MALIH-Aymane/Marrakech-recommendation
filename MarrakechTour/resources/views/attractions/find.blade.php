@@ -61,101 +61,59 @@
 
                         @csrf
 
-                        {{-- Upload Image --}}
                         <div class="mb-4">
 
-                            <label class="form-label fw-semibold">
-                                {{ __('find_attraction.upload_image') }}
-                            </label>
+    <label class="form-label fw-semibold">
+        {{ __('find_attraction.describe') }}
+    </label>
 
-                            <label for="imageUpload" class="upload-box">
+    <div class="chat-input-container">
 
-                                <div class="upload-content">
+        {{-- Bouton Image --}}
+        <label for="imageUpload" class="image-btn">
 
-                                    <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+            <i class="bi bi-image-fill"></i>
 
-                                    <h5 class="mt-3">
-                                        {{ __('find_attraction.upload_image') }}
-                                    </h5>
+        </label>
 
-                                    <p class="text-muted mb-0">
-                                        {{ __('find_attraction.drag_drop') }}
-                                    </p>
+        <input
+            id="imageUpload"
+            name="image"
+            type="file"
+            class="d-none"
+            accept="image/*">
 
-                                </div>
+        {{-- Zone de texte --}}
+        <textarea
+            id="promptInput"
+            class="prompt-input"
+            name="prompt"
+            rows="2"
+            placeholder="{{ __('find_attraction.placeholder') }}">{{ old('prompt') }}</textarea>
 
-                                <input
-                                    id="imageUpload"
-                                    name="image"
-                                    type="file"
-                                    class="d-none"
-                                    accept="image/*">
+        {{-- Bouton Envoyer --}}
+        <button
+            type="submit"
+            class="send-btn">
 
-                                <div class="mt-4 text-center">
+            <i class="bi bi-send-fill"></i>
 
-                                    <img
-                                        id="imagePreview"
-                                        class="img-fluid rounded-4 shadow d-none"
-                                        style="max-height:350px;object-fit:cover;">
-
-                                </div>
-
-                            </label>
-
-                        </div>
-
-                        {{-- Prompt --}}
-                        <div class="mb-4">
-
-                            <label class="form-label fw-semibold">
-                                {{ __('find_attraction.describe') }}
-                            </label>
-
-                            <div class="prompt-box">
-
-                                <div class="d-flex align-items-center mb-3">
-
-                                    <i class="bi bi-stars me-2 prompt-icon"></i>
-
-                                    <span class="fw-semibold">
-                                        {{ __('find_attraction.describe') }}
-                                    </span>
-
-                                </div>
-
-                                <textarea id="promptInput" class="prompt-input" name="prompt" rows="5" placeholder="{{ __('find_attraction.placeholder') }}">{{ old('prompt') }}</textarea>
-                            </div>
-
-                        </div>
-
-                        {{-- Button --}}
-                        <div class="text-center">
-
-                           <button id="submitBtn" type="submit" class="btn btn-warning rounded-pill px-5 py-3">
-
-                               <span id="btnText">
-
-                                    ✨ {{ __('find_attraction.button') }}
-
-                               </span>
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-        </div>
+        </button>
 
     </div>
-     
-    @if(request('prompt'))
 
-<div class="chat-area mt-5">
+    {{-- Aperçu de l'image --}}
+    <div class="mt-3 text-center">
 
+        <img
+            id="imagePreview"
+            class="img-fluid rounded-4 shadow d-none"
+            style="max-height:180px;object-fit:cover;">
+
+    </div>
+
+</div>
+@if(request()->filled('prompt'))
     {{-- User message --}}
     <div class="chat-message user-message">
 
@@ -287,62 +245,90 @@
 
 }
 
-.upload-box{
+.chat-input-container{
 
-    display:block;
-    border:3px dashed #D8B28A;
-    border-radius:25px;
-    padding:45px 20px;
-    text-align:center;
-    background:#FFFDF9;
-    cursor:pointer;
-    transition:.35s;
-
-}
-
-.upload-box:hover{
-
-    border-color:#C96A2B;
-    background:#FFF4EA;
-    transform:translateY(-3px);
-
-}
-
-.upload-icon{
-
-    font-size:65px;
-    color:#C96A2B;
-
-}
-
-.upload-content h5{
-
-    color:#8B4513;
-    font-weight:700;
-
-}
-
-.prompt-box{
+    display:flex;
+    align-items:flex-end;
+    gap:12px;
 
     background:white;
     border:2px solid #eee;
-    border-radius:22px;
-    padding:20px;
+    border-radius:24px;
+    padding:12px 16px;
+
     transition:.3s;
     box-shadow:0 8px 20px rgba(0,0,0,.05);
 
 }
 
-.prompt-box:hover{
-
-    border-color:#C96A2B;
-
-}
-
-.prompt-box:focus-within{
+.chat-input-container:focus-within{
 
     border-color:#C96A2B;
     box-shadow:0 0 0 .25rem rgba(201,106,43,.15);
+
+}
+
+.prompt-input{
+
+    flex:1;
+    border:none;
+    outline:none;
+    resize:none;
+    background:transparent;
+
+    min-height:45px;
+    max-height:180px;
+}
+
+.image-btn{
+
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#FFF4EA;
+    color:#C96A2B;
+
+    cursor:pointer;
+    transition:.3s;
+}
+
+.image-btn:hover{
+
+    background:#C96A2B;
+    color:white;
+
+}
+
+.image-btn i{
+
+    font-size:1.2rem;
+
+}
+
+.send-btn{
+
+    width:45px;
+    height:45px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#C96A2B;
+    color:white;
+
+    transition:.3s;
+
+}
+
+.send-btn:hover{
+
+    background:#8B4513;
 
 }
 
@@ -355,13 +341,6 @@
     background:transparent;
     font-size:1rem;
     min-height:140px;
-
-}
-
-.prompt-icon{
-
-    color:#C96A2B;
-    font-size:1.4rem;
 
 }
 
