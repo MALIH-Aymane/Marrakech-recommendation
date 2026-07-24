@@ -12,8 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\LoginHistoryController;
-
-
+use App\Http\Controllers\ReviewController;
 
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
@@ -122,6 +121,18 @@ Route::post('/find-attraction', [AttractionController::class, 'find'])
 
         Route::get('/profile/login-history', [LoginHistoryController::class, 'index'])
             ->name('login.history');
+
+        /*
+        | Reviews
+        */
+        Route::post('/attractions/{attraction}/reviews', [ReviewController::class, 'store'])
+            ->name('reviews.store');
+            
+        Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])
+            ->name('reviews.reply');
+            
+        Route::post('/reviews/{review}/react', [ReviewController::class, 'react'])
+            ->name('reviews.react');
 
     });
 

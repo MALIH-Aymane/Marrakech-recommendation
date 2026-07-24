@@ -57,4 +57,14 @@ public function loginHistories(): HasMany
 {
     return $this->hasMany(LoginHistory::class);
 }
+
+public function reviews(): HasMany
+{
+    return $this->hasMany(Review::class);
+}
+
+public function reviewReactions(): HasMany
+{
+    return $this->hasMany(ReviewReaction::class);
+}
 }

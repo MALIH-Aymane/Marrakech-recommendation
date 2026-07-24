@@ -26,4 +26,10 @@ return [
 
     'create_account' => 'Create an account',
 
+    'hero_title' => 'Discover the Magic of Marrakech',
+
+    'hero_subtitle' => 'Explore unforgettable attractions, historic palaces, and secret gardens with our personalized travel guide.',
+
+    'rights' => 'All rights reserved.',
+
 ];

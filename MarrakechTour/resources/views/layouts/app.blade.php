@@ -127,6 +127,7 @@ body{
 }
     </style>
 
+    @stack('styles')
 </head>
 
 <body>
@@ -260,13 +261,141 @@ style="min-height:100vh;"
 
 @unless(request()->routeIs('login') || request()->routeIs('register'))
 
+@if(request()->routeIs('home'))
+{{-- ════════════════════════════════════════
+     LANDING PAGE — Rich footer
+════════════════════════════════════════ --}}
 <footer>
+<div class="footer-top">
+    <div class="container">
+        <div class="row g-5">
 
-© {{ date('Y') }} Marrakech Tour
+            {{-- Brand Column --}}
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:46px;height:46px;object-fit:contain;border-radius:10px;">
+                    <div>
+                        <div class="fw-bold text-white" style="font-size:1.15rem;line-height:1.1;">Marrakech Tour</div>
+                        <div style="color:#d4a97a;font-size:.75rem;">Explore · Discover · Enjoy</div>
+                    </div>
+                </div>
+                <p style="color:#b8a090;font-size:.88rem;line-height:1.75;max-width:280px;">
+                    Your trusted guide to the hidden gems, iconic landmarks, and unforgettable experiences of the Red City.
+                </p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="#" class="footer-social" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="footer-social" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="footer-social" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="footer-social" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
 
+            {{-- Explore Column --}}
+            <div class="col-lg-2 col-md-6 col-6">
+                <p class="footer-heading">Explore</p>
+                <ul class="footer-links">
+                    <li><a href="{{ route('home') }}">{{ __('navbar.home') }}</a></li>
+                    <li><a href="{{ route('attractions.index') }}">{{ __('navbar.attractions') }}</a></li>
+                    <li><a href="{{ route('find.attraction.page') }}">Find Attraction</a></li>
+                </ul>
+            </div>
+
+            {{-- Account Column --}}
+            <div class="col-lg-2 col-md-6 col-6">
+                <p class="footer-heading">Account</p>
+                <ul class="footer-links">
+                    @auth
+                        <li><a href="{{ route('profile.edit') }}">My Profile</a></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="footer-btn-link">Logout</button>
+                            </form>
+                        </li>
+                    @else
+                        <li><a href="{{ route('login') }}">Login</a></li>
+                        <li><a href="{{ route('register') }}">Register</a></li>
+                    @endauth
+                </ul>
+            </div>
+
+            {{-- Destination Column --}}
+            <div class="col-lg-4 col-md-6">
+                <p class="footer-heading">Discover Marrakech</p>
+                <p style="color:#b8a090;font-size:.85rem;line-height:1.7;">
+                    From the bustling souks of the Medina to the serene Majorelle Garden — Marrakech has something for every traveller.
+                </p>
+                <div class="d-flex align-items-center gap-2 mt-3" style="color:#d4a97a;font-size:.82rem;">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>Marrakech, Morocco 🇲🇦</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="footer-bottom">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span>© {{ date('Y') }} Marrakech Tour. All rights reserved.</span>
+        <span style="color:#7a6050;font-size:.78rem;">Made with <span style="color:#C96A2B;">♥</span> for travellers</span>
+    </div>
+</div>
+
+<style>
+footer { background: #1a0f09; margin-top: 80px; }
+.footer-top { padding: 60px 0 40px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.footer-bottom { padding: 18px 0; color: #6a5042; font-size: .82rem; }
+.footer-heading { color: #fff; font-weight: 700; font-size: .82rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 1rem; }
+.footer-links { list-style: none; padding: 0; margin: 0; }
+.footer-links li { margin-bottom: .55rem; }
+.footer-links a, .footer-btn-link {
+    color: #b8a090; text-decoration: none; font-size: .88rem;
+    background: none; border: none; padding: 0;
+    transition: color .25s, padding-left .25s; cursor: pointer; display: inline-block;
+}
+.footer-links a:hover, .footer-btn-link:hover { color: #f5a623; padding-left: 4px; }
+.footer-social {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,.07); color: #b8a090; font-size: 1rem;
+    text-decoration: none; transition: background .25s, color .25s, transform .25s;
+    border: 1px solid rgba(255,255,255,.08);
+}
+.footer-social:hover { background: #C96A2B; color: #fff; transform: translateY(-3px); }
+</style>
 </footer>
 
+@else
+{{-- ════════════════════════════════════════
+     ALL OTHER PAGES — Simple footer
+════════════════════════════════════════ --}}
+<footer class="simple-footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:24px;height:24px;object-fit:contain;opacity:.7;">
+            <span class="fw-semibold" style="color:#d4a97a;font-size:.85rem;">Marrakech Tour</span>
+        </div>
+        <span style="font-size:.8rem;color:#7a6050;">© {{ date('Y') }} All rights reserved.</span>
+        <div class="d-flex gap-3" style="font-size:.82rem;">
+            <a href="{{ route('home') }}" style="color:#b8a090;text-decoration:none;" class="simple-footer-link">Home</a>
+            <a href="{{ route('attractions.index') }}" style="color:#b8a090;text-decoration:none;" class="simple-footer-link">Attractions</a>
+        </div>
+    </div>
+</footer>
+<style>
+.simple-footer {
+    background: #1a0f09;
+    padding: 18px 0;
+    margin-top: 60px;
+    border-top: 1px solid rgba(255,255,255,.06);
+}
+.simple-footer-link:hover { color: #f5a623 !important; }
+</style>
+@endif
+
 @endunless
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.2/build/css/intlTelInput.css">
@@ -333,5 +462,6 @@ window.addEventListener("resize", resizeCards);
 
 
 </script>
+@stack('scripts')
 </body>
 </html>

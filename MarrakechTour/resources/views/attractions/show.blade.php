@@ -148,19 +148,7 @@
 
                     <!-- Avis -->
 
-                    <h5 style="color:#8B4513;">
-
-                        <i class="bi bi-chat-left-text-fill"></i>
-
-                        {{ __('attractions.reviews') }}
-
-                    </h5>
-
-                    <div class="bg-light rounded-3 p-3">
-
-                        {{ $attraction->reviews }}
-
-                    </div>
+                    @include('components.reviews')
 
                     <!-- Boutons -->
 

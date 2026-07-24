@@ -105,11 +105,15 @@ class AttractionController extends Controller
      */
     public function show(Attraction $attraction)
     {
+        $attraction->load(['userReviews' => function ($query) {
+            $query->whereNull('parent_id')->with(['user', 'replies.user', 'replies.reactions', 'reactions'])->latest();
+        }]);
 
         if(auth()->check() && auth()->user()->hasRole('Admin')){
-        return view("attractions.show", compact('attraction'));
-    }   return view("attractions.show-user", compact('attraction'));
-}
+            return view("attractions.show", compact('attraction'));
+        }   
+        return view("attractions.show-user", compact('attraction'));
+    }
     /**
      * Show the form for editing the specified resource.
      */
