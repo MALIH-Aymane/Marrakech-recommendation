@@ -227,17 +227,17 @@
                         <tr>
 
         <td>
-
-            <div class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center fw-bold"
-                 style="width:45px;height:45px;">
-
-                {{ collect(explode(' ', $user->name))
-                    ->map(fn($word)=>strtoupper(substr($word,0,1)))
-                    ->take(2)
-                    ->implode('') }}
-
-            </div>
-
+            @if($user->photo)
+                <img src="{{ asset('storage/'.$user->photo) }}"
+                     class="rounded-circle object-fit-cover shadow-sm"
+                     style="width:45px;height:45px;object-fit:cover;border:2px solid #f0e0d0;"
+                     alt="{{ $user->name }}">
+            @else
+                <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold text-white"
+                     style="width:45px;height:45px;background:linear-gradient(135deg,#C96A2B,#8B4513);font-size:.85rem;">
+                    {{ collect(explode(' ', $user->name))->map(fn($w)=>strtoupper(substr($w,0,1)))->take(2)->implode('') }}
+                </div>
+            @endif
         </td>
 
         <td>
@@ -301,14 +301,14 @@
             <button
         type="button"
         class="btn btn-info btn-sm view-user"
-
         data-id="{{ $user->id }}"
         data-name="{{ $user->name }}"
         data-email="{{ $user->email }}"
         data-role="{{ $user->hasRole('Admin') ? 'Administrateur' : 'Utilisateur' }}"
         data-role-type="{{ $user->hasRole('Admin') ? 'Admin' : 'User' }}"
         data-date="{{ $user->created_at->format('d/m/Y') }}"
-        data-time="{{ $user->created_at->format('H:i') }}">
+        data-time="{{ $user->created_at->format('H:i') }}"
+        data-photo="{{ $user->photo ? asset('storage/'.$user->photo) : '' }}">
 
         <i class="bi bi-eye-fill"></i>
 
@@ -442,10 +442,12 @@
 
                 <div class="text-center mb-4">
 
-                    <div id="adminAvatar"
-                         class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center fw-bold mx-auto shadow"
-                         style="width:110px;height:110px;font-size:38px;">
-
+                    <div id="adminAvatarWrap" class="mx-auto mb-3" style="width:110px;height:110px;">
+                        <img id="adminAvatarImg" src="" alt="" class="rounded-circle w-100 h-100 d-none" style="object-fit:cover;border:3px solid #f0e0d0;box-shadow:0 8px 20px rgba(0,0,0,.12);">
+                        <div id="adminAvatar"
+                             class="rounded-circle d-flex justify-content-center align-items-center fw-bold mx-auto shadow text-white"
+                             style="width:110px;height:110px;font-size:38px;background:linear-gradient(135deg,#C96A2B,#8B4513);">
+                        </div>
                     </div>
 
                     <h3 id="adminName"
@@ -551,6 +553,7 @@
                     data-bs-dismiss="modal">
                 </button>
 
+                <img id="avatarUserImg" src="" alt="" class="user-avatar shadow d-none" style="object-fit:cover;border:4px solid rgba(255,255,255,.3);">
                 <div id="avatarUser" class="user-avatar shadow"></div>
 
                 <h2 id="modalName" class="mt-4 fw-bold text-white"></h2>
@@ -826,13 +829,13 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function(){
 
             let roleType = this.dataset.roleType;
-
-            let name  = this.dataset.name;
-            let email = this.dataset.email;
-            let id    = this.dataset.id;
-            let role  = this.dataset.role;
-            let date  = this.dataset.date;
-            let time  = this.dataset.time;
+            let name     = this.dataset.name;
+            let email    = this.dataset.email;
+            let id       = this.dataset.id;
+            let role     = this.dataset.role;
+            let date     = this.dataset.date;
+            let time     = this.dataset.time;
+            let photo    = this.dataset.photo || '';
 
             let initials = name
                 .split(' ')
@@ -847,43 +850,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if(roleType === "Admin"){
 
-                document.getElementById('adminAvatar').textContent = initials;
-                document.getElementById('adminName').textContent = name;
+                // Avatar: photo or initials
+                const adminImg    = document.getElementById('adminAvatarImg');
+                const adminAvatar = document.getElementById('adminAvatar');
+                if(photo) {
+                    adminImg.src = photo;
+                    adminImg.classList.remove('d-none');
+                    adminAvatar.classList.add('d-none');
+                } else {
+                    adminAvatar.textContent = initials;
+                    adminAvatar.classList.remove('d-none');
+                    adminImg.classList.add('d-none');
+                }
+
+                document.getElementById('adminName').textContent  = name;
                 document.getElementById('adminEmail').textContent = email;
-                document.getElementById('adminId').textContent = id;
-                document.getElementById('adminDate').textContent = date;
-                document.getElementById('adminTime').textContent = time;
+                document.getElementById('adminId').textContent    = id;
+                document.getElementById('adminDate').textContent  = date;
+                document.getElementById('adminTime').textContent  = time;
 
-                let adminModal = new bootstrap.Modal(
-                    document.getElementById('adminUserModal')
-                );
-
-                adminModal.show();
+                new bootstrap.Modal(document.getElementById('adminUserModal')).show();
             }
 
             // ===========================
             // UTILISATEUR
             // ===========================
 
-            else{
+            else {
 
-                document.getElementById('avatarUser').textContent = initials;
-                document.getElementById('modalName').textContent = name;
+                // Avatar: photo or initials
+                const userImg    = document.getElementById('avatarUserImg');
+                const userAvatar = document.getElementById('avatarUser');
+                if(photo) {
+                    userImg.src = photo;
+                    userImg.classList.remove('d-none');
+                    userAvatar.classList.add('d-none');
+                } else {
+                    userAvatar.textContent = initials;
+                    userAvatar.classList.remove('d-none');
+                    userImg.classList.add('d-none');
+                }
+
+                document.getElementById('modalName').textContent  = name;
                 document.getElementById('modalEmail').textContent = email;
-                document.getElementById('modalId').textContent = id;
-                document.getElementById('modalDate').textContent = date;
-                document.getElementById('modalTime').textContent = time;
+                document.getElementById('modalId').textContent    = id;
+                document.getElementById('modalDate').textContent  = date;
+                document.getElementById('modalTime').textContent  = time;
 
                 const badge = document.getElementById('modalRoleBadge');
-
                 badge.textContent = role;
                 badge.className = "badge bg-primary rounded-pill px-4 py-2";
 
-                let userModal = new bootstrap.Modal(
-                    document.getElementById('userModal')
-                );
-
-                userModal.show();
+                new bootstrap.Modal(document.getElementById('userModal')).show();
             }
 
         });
