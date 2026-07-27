@@ -13,9 +13,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\LoginHistoryController;
 use App\Http\Controllers\ReviewController;
-
+use App\Services\AI\GeminiVisionService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
+use App\Services\AI\GeminiEmbeddingService;
+use App\Http\Controllers\ImageSearchController;
+
 
 Route::get('/storage/attractions/{filename}', function ($filename) {
     // Filename is like "07e08b14-cd10-408f-a776-e05717795ff9.jpg"
@@ -78,6 +82,31 @@ Route::group([
 
 Route::post('/find-attraction', [AttractionController::class, 'find'])
     ->name('find.attraction');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Test Gemini
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/test-gemini', function (GeminiVisionService $gemini) {
+
+    $image = public_path('image_1.jpg');
+
+    return $gemini->analyzeImage($image);
+
+});
+Route::get('/test-embedding', function (GeminiEmbeddingService $gemini) {
+
+    $image = public_path('image_1.jpg');
+
+    return $gemini->embedImage($image);
+
+});
+
+Route::post('/image-search', [ImageSearchController::class, 'search'])
+    ->name('image.search');
 
     /*
     |--------------------------------------------------------------------------

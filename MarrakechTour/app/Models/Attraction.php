@@ -28,4 +28,12 @@ class Attraction extends Model
     {
         return $this->hasMany(Review::class);
     }
+    public function images()
+{
+    return $this->hasMany(AttractionImage::class);
+}
+public function embedding()
+{
+    return $this->hasOne(AttractionEmbedding::class);
+}
 }

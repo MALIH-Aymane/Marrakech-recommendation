@@ -166,6 +166,7 @@
     flex-shrink:0;
 }
   </style>
+  @stack('styles')
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">

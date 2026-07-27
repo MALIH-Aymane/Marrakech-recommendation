@@ -8,6 +8,8 @@ use App\Models\Attraction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\UpdateAttractionNotification;
+use App\Services\AI\ClipEmbeddingService;
+use App\Services\AI\ImageSearchService;
 class AttractionController extends Controller
 {
     /**
@@ -104,17 +106,29 @@ class AttractionController extends Controller
      * Display the specified resource.
      */
     public function show(Attraction $attraction)
-    {
-        $attraction->load(['userReviews' => function ($query) {
-            $query->whereNull('parent_id')->with(['user', 'replies.user', 'replies.reactions', 'reactions'])->latest();
-        }]);
+{
+    $attraction->load([
+        'images',
+        'userReviews' => function ($query) {
+            $query->whereNull('parent_id')
+                  ->with([
+                      'user',
+                      'replies.user',
+                      'replies.reactions',
+                      'reactions'
+                  ])
+                  ->latest();
+        }
+    ]);
 
-        if(auth()->check() && auth()->user()->hasRole('Admin')){
-            return view("attractions.show", compact('attraction'));
-        }   
-        return view("attractions.show-user", compact('attraction'));
+    if (auth()->check() && auth()->user()->hasRole('Admin')) {
+
+        return view("attractions.show", compact('attraction'));
+
     }
-    /**
+
+    return view("attractions.show-user", compact('attraction'));
+}/**
      * Show the form for editing the specified resource.
      */
     public function edit(Attraction $attraction)
@@ -196,12 +210,37 @@ class AttractionController extends Controller
             ->route('attractions.index')
             ->with('success', 'Attraction supprimée avec succès.');
 }
-public function find(Request $request)
+public function find(
+    Request $request,
+    ClipEmbeddingService $clip,
+    ImageSearchService $imageSearch
+)
 {
     $request->validate([
         'image'  => 'nullable|image|max:2048',
         'prompt' => 'nullable|string|max:1000',
     ]);
+
+    /*
+|--------------------------------------------------------------------------
+| Recherche visuelle OpenCLIP
+|--------------------------------------------------------------------------
+*/
+
+$visualResults = collect();
+
+if ($request->hasFile('image')) {
+
+    $path = $request->file('image')->store('search', 'public');
+
+    $fullPath = storage_path('app/public/' . $path);
+
+    $embedding = $clip->embedImage($fullPath);
+
+    $visualResults = collect($imageSearch->search($embedding));
+
+    @unlink($fullPath);
+}
 
     $query = Attraction::query()
         ->whereNotNull('photo')
@@ -330,7 +369,8 @@ public function find(Request $request)
         }
     }
 
-    $recommendations = $query
+   $recommendations = $query
+    ->with('images')
     ->inRandomOrder()
     ->get()
     ->unique(function ($item) {
@@ -400,19 +440,80 @@ if ($recommendations->count() > 1) {
     // Si aucun résultat n'est trouvé, afficher 6 attractions aléatoires
     if ($recommendations->isEmpty()) {
 
-        $recommendations = Attraction::whereNotNull('photo')
-            ->where('photo','!=','')
-            ->inRandomOrder()
-            ->take(6)
-            ->get();
+        $recommendations = Attraction::with('images')
+              ->whereNotNull('photo')
+              ->where('photo','!=','')
+              ->inRandomOrder()
+              ->take(6)
+              ->get();
 
     }
          $aiMessage = __('find_attraction.ai_message', [
          'type' => $type,
 ]);
-    return view('attractions.find', compact(
-    'recommendations',
-    'aiMessage'
-));
+    /*
+|--------------------------------------------------------------------------
+| Choix des résultats à afficher
+|--------------------------------------------------------------------------
+*/
+
+$results = collect();
+
+if ($request->filled('prompt') && $request->hasFile('image')) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Recherche multimodale
+    |--------------------------------------------------------------------------
+    */
+
+    $ids = $recommendations->pluck('id');
+
+    $results = $visualResults
+        ->filter(function ($item) use ($ids) {
+            return $ids->contains($item->id);
+        })
+        ->values();
+
+    // Si l'intersection est vide, on garde les résultats visuels
+    if ($results->isEmpty()) {
+
+        $results = $visualResults;
+
+    }
+
+}
+elseif ($request->hasFile('image')) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Recherche visuelle uniquement
+    |--------------------------------------------------------------------------
+    */
+
+    $results = $visualResults;
+
+}
+else {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Recherche textuelle uniquement
+    |--------------------------------------------------------------------------
+    */
+
+    $results = $recommendations;
+
+}
+
+return view('attractions.find', [
+
+    'results' => $results,
+
+    'recommendations' => $recommendations,
+
+    'aiMessage' => $aiMessage
+
+]);
 }
 }

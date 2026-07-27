@@ -10,6 +10,33 @@
         overflow: hidden;           /* clip, do NOT scroll behind sidebar */
         border-radius: 20px;
     }
+    .gallery-arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.85);
+    color:#8B4513;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+    z-index:20;
+    transition:.25s;
+}
+
+.gallery-arrow:hover{
+    background:#C96A2B;
+    color:white;
+}
+
+.gallery-prev{
+    left:12px;
+}
+
+.gallery-next{
+    right:12px;
+}
     .image-scroll-container {
         display: flex;
         overflow-x: auto;
@@ -126,17 +153,54 @@
 
             {{-- Gallery --}}
             <div class="gallery-wrap mb-3" id="galleryWrap">
-                <div class="image-scroll-container" id="imageScroll">
-                    @if($attraction->photo)
-                        <img src="{{ asset('storage/'.$attraction->photo) }}" class="scroll-image" alt="{{ $attraction->attraction }}">
-                    @else
-                        <img src="https://placehold.co/900x420/F8F4EF/8B4513?text=No+Image" class="scroll-image" alt="No image">
-                    @endif
-                    <img src="https://placehold.co/900x420/EDE0D4/A0522D?text=View+2" class="scroll-image" alt="View 2">
-                    <img src="https://placehold.co/900x420/DDD0C4/8B4513?text=View+3" class="scroll-image" alt="View 3">
-                </div>
-                <div class="gallery-dots" id="galleryDots"></div>
-            </div>
+
+                <button
+    class="gallery-arrow gallery-prev"
+    id="prevBtn">
+
+    <i class="bi bi-chevron-left"></i>
+
+</button>
+
+<button
+    class="gallery-arrow gallery-next"
+    id="nextBtn">
+
+    <i class="bi bi-chevron-right"></i>
+
+</button>
+
+    <div class="image-scroll-container" id="imageScroll">
+
+    @php
+        $images = $attraction->images
+            ->sortBy(function ($image) {
+                return $image->source === 'legacy' ? 0 : 1;
+            })
+            ->unique('image');
+    @endphp
+
+    @forelse($images as $image)
+
+        <img
+            src="{{ asset('storage/'.$image->image) }}"
+            class="scroll-image"
+            alt="{{ $attraction->attraction }}">
+
+    @empty
+
+        <img
+            src="https://placehold.co/900x420/F8F4EF/8B4513?text=No+Image"
+            class="scroll-image"
+            alt="No image">
+
+    @endforelse
+
+</div>
+
+    <div class="gallery-dots" id="galleryDots"></div>
+
+</div>
 
             {{-- Reviews --}}
             <div class="bg-white p-4 rounded-4 shadow-sm border mt-4">
@@ -230,6 +294,33 @@
         const idx = Math.round(scroll.scrollLeft / scroll.offsetWidth);
         dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     }, { passive: true });
+
+    const prev = document.getElementById('prevBtn');
+const next = document.getElementById('nextBtn');
+
+prev.addEventListener('click', () => {
+
+    scroll.scrollBy({
+
+        left: -scroll.offsetWidth,
+
+        behavior: 'smooth'
+
+    });
+
+});
+
+next.addEventListener('click', () => {
+
+    scroll.scrollBy({
+
+        left: scroll.offsetWidth,
+
+        behavior: 'smooth'
+
+    });
+
+});
 })();
 </script>
 @endsection
