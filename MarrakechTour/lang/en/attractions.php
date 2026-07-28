@@ -61,6 +61,30 @@ return [
 
         'Restaurant' => 'Restaurant',
 
+        'Monument' => 'Monument',
+
+        'Golf' => 'Golf course',
+
+        'Souk' => 'Souk',
+
+        'Plage' => 'Beach',
+
+        'Centre commercial' => 'Shopping mall',
+
+        'Site religieux' => 'Religious site',
+
+        'Lac' => 'Lake',
+
+        'Cascade' => 'Waterfall',
+
+        'Place' => 'Square',
+
+        'Ruines' => 'Ruins',
+
+        'Spa' => 'Spa',
+        
+        'Galerie d\'art' => 'Art gallery',
+
     ],
 
 ];

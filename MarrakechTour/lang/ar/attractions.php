@@ -61,5 +61,29 @@ return [
 
         'Restaurant' => 'مطعم',
 
+        'Golf' => 'ملعب غولف',
+
+        'Souk' => 'سوق',
+
+        'Plage' => 'شاطئ',
+
+        'Centre commercial' => 'مركز تجاري',
+
+        'Site religieux' => 'موقع ديني',
+
+        'Lac' => 'بحيرة',
+
+        'Cascade' => 'شلال',
+
+        'Place' => 'ساحة',
+
+        'Ruines' => 'أطلال',
+
+        'Spa' => 'منتجع صحي',
+
+        'Monument' => 'معلم',
+        
+        'Galerie d\'art' => 'معرض فني',
+
     ],
 ];
