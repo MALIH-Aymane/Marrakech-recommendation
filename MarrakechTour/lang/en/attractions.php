@@ -82,8 +82,14 @@ return [
         'Ruines' => 'Ruins',
 
         'Spa' => 'Spa',
-        
+
         'Galerie d\'art' => 'Art gallery',
+
+        'Parc' => 'Park',
+        
+        'Parc aquatique' => 'Water park',
+
+       
 
     ],
 

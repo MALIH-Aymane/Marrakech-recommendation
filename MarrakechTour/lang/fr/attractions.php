@@ -85,5 +85,9 @@ return [
 
         'Galerie d\'art' => 'Galerie d\'art',
 
+        'Parc' => 'Parc',
+        
+        'Parc aquatique' => 'Parc aquatique'
+
     ],
 ];

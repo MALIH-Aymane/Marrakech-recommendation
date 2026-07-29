@@ -85,5 +85,9 @@ return [
         
         'Galerie d\'art' => 'معرض فني',
 
+        'Parc' => 'منتزه',
+
+        'Parc aquatique' => 'مدينة ألعاب مائية',
+
     ],
 ];

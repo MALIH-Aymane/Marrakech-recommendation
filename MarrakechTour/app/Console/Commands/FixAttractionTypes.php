@@ -9,461 +9,634 @@ class FixAttractionTypes extends Command
 {
     protected $signature = 'app:fix-attraction-types';
 
-    protected $description = 'Recatégorise automatiquement les attractions touristiques';
+    protected $description = 'Classification intelligente des attractions';
 
     public function handle()
     {
+        /*
+        |--------------------------------------------------------------------------
+        | On ne traite QUE les attractions encore non classées
+        |--------------------------------------------------------------------------
+        */
+
         $attractions = Attraction::where('type', 'Attraction touristique')->get();
 
         $count = 0;
 
+        /*
+        |--------------------------------------------------------------------------
+        | Fonction de normalisation
+        |--------------------------------------------------------------------------
+        */
+
+        $normalize = function ($text) {
+
+            $text = strtolower($text ?? '');
+
+            $text = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+
+            $text = preg_replace('/[^a-z0-9 ]/', ' ', $text);
+
+            $text = preg_replace('/\s+/', ' ', $text);
+
+            return trim($text);
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Toutes les règles de classification
+        |--------------------------------------------------------------------------
+        */
+
+        $rules = [
+                        /*
+            |--------------------------------------------------------------------------
+            | Musées
+            |--------------------------------------------------------------------------
+            */
+
+            'Musée' => [
+
+                'exact' => [
+
+                    'musee de la palmeraie',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'museum',
+                    'museums',
+                    'history museum',
+                    'history museums',
+                    'art museum',
+                    'art museums',
+                    'speciality museum',
+                    'speciality museums',
+
+                ],
+
+                'keywords' => [
+
+                    'museum',
+                    'musee',
+                    'musée',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Jardins
+            |--------------------------------------------------------------------------
+            */
+
+            'Jardin' => [
+
+                'exact' => [
+
+                    'le jardin du safran',
+                    'jardin bio aromatique nectarome',
+                    'le paradis du safran'
+
+                ],
+
+                'tripadvisor' => [
+
+                    'garden',
+                    'gardens',
+                    'botanical garden',
+                    'botanical gardens',
+                    'park',
+                    'parks',
+
+                ],
+
+                'keywords' => [
+
+                    'garden',
+                    'gardens',
+                    'botanical garden',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Palais
+            |--------------------------------------------------------------------------
+            */
+
+            'Palais' => [
+
+                'exact' => [
+
+                ],
+
+                'tripadvisor' => [
+
+                    'palace',
+
+                ],
+
+                'keywords' => [
+
+                    'palace',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Mosquées
+            |--------------------------------------------------------------------------
+            */
+
+            'Mosquée' => [
+
+                'exact' => [
+
+                ],
+
+                'tripadvisor' => [
+
+                    'mosque',
+                    'mosques',
+
+                ],
+
+                'keywords' => [
+
+                    'mosque',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Site religieux
+            |--------------------------------------------------------------------------
+            */
+
+            'Site religieux' => [
+
+                'exact' => [
+
+                ],
+
+                'tripadvisor' => [
+
+                    'religious site',
+                    'religious sites',
+                    'church',
+                    'churches',
+                    'cathedral',
+                    'cathedrals',
+                    'synagogue',
+                    'synagogues',
+                    'cemetery',
+                    'cemeteries',
+
+                ],
+
+                'keywords' => [
+
+                    'church',
+                    'cathedral',
+                    'synagogue',
+                    'cemetery',
+
+                ],
+
+            ],
+                        /*
+            |--------------------------------------------------------------------------
+            | Souks
+            |--------------------------------------------------------------------------
+            */
+
+            'Souk' => [
+
+                'exact' => [
+
+                ],
+
+                'tripadvisor' => [
+
+                    'flea markets',
+                    'street markets',
+                    'farmers markets',
+                    'food markets',
+
+                ],
+
+                'keywords' => [
+
+                    'souk',
+                    'souks',
+                    'market',
+                    'bazaar',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Monuments
+            |--------------------------------------------------------------------------
+            */
+
+            'Monument' => [
+
+                'exact' => [
+
+                    'essaouira ramparts',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'points of interest landmarks',
+                    'historic walking areas',
+
+                ],
+
+                'keywords' => [
+
+                    'ramparts',
+                    'landmark',
+                    'monument',
+                    'memorial',
+                    'fortress',
+                    'fort',
+                    'tower',
+                    'koubba',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Galerie d'art
+            |--------------------------------------------------------------------------
+            */
+
+            'Galerie d\'art' => [
+
+                'exact' => [
+
+                    'galerie la kasbah',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'art gallery',
+                    'art galleries',
+
+                ],
+
+                'keywords' => [
+
+                    'gallery',
+                    'galerie',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Plages
+            |--------------------------------------------------------------------------
+            */
+
+            'Plage' => [
+
+                'exact' => [
+
+                    'plage de sidi kaouki',
+                    'essaouira beach',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'beach',
+                    'beaches',
+                    'beach pool clubs',
+
+                ],
+
+                'keywords' => [
+
+                    'beach',
+                    'plage',
+                    'coast',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Golf
+            |--------------------------------------------------------------------------
+            */
+
+            'Golf' => [
+
+                'exact' => [
+
+                    'assoufid golf club',
+                    'royal golf marrakech',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'golf course',
+                    'golf courses',
+
+                ],
+
+                'keywords' => [
+
+                    'golf',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Lacs
+            |--------------------------------------------------------------------------
+            */
+
+            'Lac' => [
+
+                'exact' => [
+
+                    'lac lalla takerkoust',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'bodies of water',
+
+                ],
+
+                'keywords' => [
+
+                    'lake',
+                    'lac',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Cascades
+            |--------------------------------------------------------------------------
+            */
+
+            'Cascade' => [
+
+                'exact' => [
+
+                    'setti fatma and the 7 cascades',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'waterfall',
+                    'waterfalls',
+
+                ],
+
+                'keywords' => [
+
+                    'cascade',
+                    'cascades',
+                    'waterfall',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Centre commercial
+            |--------------------------------------------------------------------------
+            */
+
+            'Centre commercial' => [
+
+                'exact' => [
+
+                    'm avenue marrakech',
+                    'menara mall',
+                    'almazar centre commercial',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'shopping mall',
+                    'shopping malls',
+
+                ],
+
+                'keywords' => [
+
+                    'mall',
+                    'shopping',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Parc aquatique
+            |--------------------------------------------------------------------------
+            */
+
+            'Parc aquatique' => [
+
+                'exact' => [
+
+                    'oasiria',
+                    'eden aquapark',
+                    'le vizir center',
+
+                ],
+
+                'tripadvisor' => [
+
+                    'water park',
+                    'water parks',
+
+                ],
+
+                'keywords' => [
+
+                    'water park',
+                    'aquapark',
+
+                ],
+
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Spa
+            |--------------------------------------------------------------------------
+            */
+
+            'Spa' => [
+
+                'exact' => [
+
+                ],
+
+                'tripadvisor' => [
+
+                    'spa',
+
+                ],
+
+                'keywords' => [
+
+                    'spa',
+                    'massage',
+                    'hammam',
+                    'wellness',
+
+                ],
+
+            ],
+
+        ];
+                /*
+        |--------------------------------------------------------------------------
+        | Classification
+        |--------------------------------------------------------------------------
+        */
+
         foreach ($attractions as $a) {
+
             $ancienType = $a->type;
 
-            $text = strtolower(
-                ($a->attraction ?? '') . ' ' .
-                strip_tags($a->details ?? '')
-            );
+            $nom = $normalize($a->attraction);
+
+            $details = $normalize(strip_tags($a->details ?? ''));
 
             /*
-            |--------------------------------------------------------
-            | Jardins
-            |--------------------------------------------------------
+            |--------------------------------------------------------------------------
+            | Parcours des règles
+            |--------------------------------------------------------------------------
             */
 
-            if (
+            foreach ($rules as $type => $rule) {
 
-                str_contains($text,'garden') ||
-                str_contains($text,'gardens') ||
-                str_contains($text,'botanical garden') ||
-                str_contains($text,'botanical gardens') ||
-                str_contains($text,'public garden') ||
-                str_contains($text,'rose garden') ||
-                str_contains($text,'park') ||
-                str_contains($text,'parks') ||
-                str_contains($text,'majorelle') ||
-                str_contains($text,'cyber parc') ||
-                str_contains($text,'menara gardens')
+                $matched = false;
 
-            ) {
+                /*
+                |--------------------------------------------------------------------------
+                | 1. Nom exact (priorité maximale)
+                |--------------------------------------------------------------------------
+                */
 
-                $a->type = 'Jardin';
+                foreach ($rule['exact'] as $exact) {
 
-            }
+                    if ($nom === $normalize($exact)) {
 
-            /*
-            |--------------------------------------------------------
-            | Musées
-            |--------------------------------------------------------
-            */
+                        $a->type = $type;
 
-            elseif (
+                        $matched = true;
 
-                str_contains($text,'museum') ||
-                str_contains($text,'museums') ||
-                str_contains($text,'history museum') ||
-                str_contains($text,'history museums') ||
-                str_contains($text,'art museum') ||
-                str_contains($text,'art museums') ||
-                str_contains($text,'speciality museum') ||
-                str_contains($text,'speciality museums') ||
-                str_contains($text,'science museum') ||
-                str_contains($text,'heritage museum') ||
-                str_contains($text,'musée')
+                        break;
 
-            ) {
+                    }
 
-                $a->type = 'Musée';
+                }
 
-            }
+                if ($matched) {
+                    break;
+                }
 
-            /*
-            |--------------------------------------------------------
-            | Palais
-            |--------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | 2. Catégories TripAdvisor
+                |--------------------------------------------------------------------------
+                */
 
-            elseif (
+                foreach ($rule['tripadvisor'] as $trip) {
 
-                str_contains($text,'palace') ||
-                str_contains($text,'palaces') ||
-                str_contains($text,'royal palace') ||
-                str_contains($text,'architectural building') ||
-                str_contains($text,'architectural buildings') ||
-                str_contains($text,'bahia palace') ||
-                str_contains($text,'el badi')
+                    if (
+                        $details != '' &&
+                        str_contains($details, $normalize($trip))
+                    ) {
 
-            ) {
+                        $a->type = $type;
 
-                $a->type = 'Palais';
+                        $matched = true;
 
-            }
+                        break;
 
-            /*
-            |--------------------------------------------------------
-            | Sites historiques
-            |--------------------------------------------------------
-            */
+                    }
 
-            elseif (
+                }
 
-                str_contains($text,'historic site') ||
-                str_contains($text,'historic sites') ||
-                str_contains($text,'historical site') ||
-                str_contains($text,'historical sites') ||
-                str_contains($text,'heritage site') ||
-                str_contains($text,'unesco') ||
-                str_contains($text,'historic walking areas')
+                if ($matched) {
+                    break;
+                }
 
-            ) {
+                /*
+                |--------------------------------------------------------------------------
+                | 3. Mots-clés (nom + détails)
+                |--------------------------------------------------------------------------
+                */
 
-                $a->type = 'Site historique';
+                $texte = $nom.' '.$details;
+
+                foreach ($rule['keywords'] as $keyword) {
+
+                    if (str_contains($texte, $normalize($keyword))) {
+
+                        $a->type = $type;
+
+                        $matched = true;
+
+                        break;
+
+                    }
+
+                }
+
+                if ($matched) {
+                    break;
+                }
 
             }
 
             /*
-            |--------------------------------------------------------
-            | Spa
-            |--------------------------------------------------------
+            |--------------------------------------------------------------------------
+            | Sauvegarde uniquement si le type a changé
+            |--------------------------------------------------------------------------
             */
-
-            elseif (
-
-                str_contains($text,'spa') ||
-                str_contains($text,'spas') ||
-                str_contains($text,'massage') ||
-                str_contains($text,'wellness') ||
-                str_contains($text,'hammam') ||
-                str_contains($text,'turkish bath') ||
-                str_contains($text,'arab bath')
-
-            ) {
-
-                $a->type = 'Spa';
-
-            }
-                        /*
-            |--------------------------------------------------------
-            | Mosquées
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'mosque') ||
-                str_contains($text,'mosques') ||
-                str_contains($text,'koutoubia') ||
-                str_contains($text,'kasbah mosque')
-
-            ) {
-
-                $a->type = 'Mosquée';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Souks et marchés
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'souk') ||
-                str_contains($text,'souks') ||
-                str_contains($text,'market') ||
-                str_contains($text,'markets') ||
-                str_contains($text,'flea & street markets') ||
-                str_contains($text,'farmers markets') ||
-                str_contains($text,'bazaar')
-
-            ) {
-
-                $a->type = 'Souk';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Places
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'square') ||
-                str_contains($text,'plaza') ||
-                str_contains($text,'place des') ||
-                str_contains($text,'jemaa el-fnaa') ||
-                str_contains($text,'rahba kedima')
-
-            ) {
-
-                $a->type = 'Place';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Monuments
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'monument') ||
-                str_contains($text,'monuments') ||
-                str_contains($text,'landmark') ||
-                str_contains($text,'landmarks') ||
-                str_contains($text,'memorial') ||
-                str_contains($text,'koubba') ||
-                str_contains($text,'ramparts')
-
-            ) {
-
-                $a->type = 'Monument';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Galeries d'art
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'gallery') ||
-                str_contains($text,'galleries') ||
-                str_contains($text,'art gallery') ||
-                str_contains($text,'art galleries')
-
-            ) {
-
-                $a->type = 'Galerie d\'art';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Ruines
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'archaeological') ||
-                str_contains($text,'ancient ruins') ||
-                str_contains($text,'ruins')
-
-            ) {
-
-                $a->type = 'Ruines';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Lacs
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'lake') ||
-                str_contains($text,'lac') ||
-                str_contains($text,'bodies of water')
-
-            ) {
-
-                $a->type = 'Lac';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Cascades
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'waterfall') ||
-                str_contains($text,'waterfalls') ||
-                str_contains($text,'cascade') ||
-                str_contains($text,'cascades')
-
-            ) {
-
-                $a->type = 'Cascade';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Golf
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'golf') ||
-                str_contains($text,'golf course') ||
-                str_contains($text,'golf courses')
-
-            ) {
-
-                $a->type = 'Golf';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Centres commerciaux
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'shopping mall') ||
-                str_contains($text,'shopping malls') ||
-                str_contains($text,'shopping center') ||
-                str_contains($text,'shopping centre') ||
-                str_contains($text,'centre commercial') ||
-                str_contains($text,'mall')
-
-            ) {
-
-                $a->type = 'Centre commercial';
-
-            }
-                        /*
-            |--------------------------------------------------------
-            | Plages
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'beach') ||
-                str_contains($text,'beaches') ||
-                str_contains($text,'beach club') ||
-                str_contains($text,'beach & pool clubs') ||
-                str_contains($text,'coast') ||
-                str_contains($text,'seaside')
-
-            ) {
-
-                $a->type = 'Plage';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Parcs aquatiques
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'water park') ||
-                str_contains($text,'water parks') ||
-                str_contains($text,'aquapark') ||
-                str_contains($text,'aquatic park')
-
-            ) {
-
-                $a->type = 'Parc aquatique';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Sites religieux
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'religious site') ||
-                str_contains($text,'religious sites') ||
-                str_contains($text,'church') ||
-                str_contains($text,'churches') ||
-                str_contains($text,'cathedral') ||
-                str_contains($text,'cathedrals') ||
-                str_contains($text,'synagogue') ||
-                str_contains($text,'cemetery') ||
-                str_contains($text,'cemeteries')
-
-            ) {
-
-                $a->type = 'Site religieux';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Ports
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'fishing port') ||
-                str_contains($text,'harbour') ||
-                str_contains($text,'harbor') ||
-                str_contains($text,'port')
-
-            ) {
-
-                $a->type = 'Monument';
-
-            }
-
-            /*
-            |--------------------------------------------------------
-            | Activités : on laisse Attraction touristique
-            |--------------------------------------------------------
-            */
-
-            elseif (
-
-                str_contains($text,'tour') ||
-                str_contains($text,'tours') ||
-                str_contains($text,'guided tour') ||
-                str_contains($text,'private tour') ||
-                str_contains($text,'walking tour') ||
-                str_contains($text,'bike tour') ||
-                str_contains($text,'food tour') ||
-                str_contains($text,'shopping tour') ||
-                str_contains($text,'camel') ||
-                str_contains($text,'camel ride') ||
-                str_contains($text,'quad') ||
-                str_contains($text,'buggy') ||
-                str_contains($text,'atv') ||
-                str_contains($text,'4wd') ||
-                str_contains($text,'balloon') ||
-                str_contains($text,'hot air balloon') ||
-                str_contains($text,'adventure') ||
-                str_contains($text,'travel') ||
-                str_contains($text,'trek') ||
-                str_contains($text,'trekking') ||
-                str_contains($text,'hiking') ||
-                str_contains($text,'excursion') ||
-                str_contains($text,'taxi') ||
-                str_contains($text,'shuttle') ||
-                str_contains($text,'transport') ||
-                str_contains($text,'transfer') ||
-                str_contains($text,'festival') ||
-                str_contains($text,'casino') ||
-                str_contains($text,'kart') ||
-                str_contains($text,'racing')
-
-            ) {
-
-                $a->type = 'Attraction touristique';
-
-            }
 
             if ($a->type != $ancienType) {
 
@@ -472,10 +645,26 @@ class FixAttractionTypes extends Command
                 $count++;
 
             }
-                    }
 
-        $this->info("✔ {$count} attractions ont été reclassées avec succès.");
+        }
+                /*
+        |--------------------------------------------------------------------------
+        | Résultat
+        |--------------------------------------------------------------------------
+        */
+
+        $this->newLine();
+
+        $this->info('==========================================');
+        $this->info(' Classification terminée avec succès');
+        $this->info('==========================================');
+
+        $this->newLine();
+
+        $this->info("✔ {$count} attractions reclassées.");
 
         return Command::SUCCESS;
+
     }
+
 }
