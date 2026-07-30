@@ -17,10 +17,13 @@ class AttractionController extends Controller
      */
  public function home()
 {
-    $attractions = Attraction::where('type', '!=', 'Excursion')
+    $attractions = Attraction::whereNotIn('type', [
+            'Excursion',
+            'Attraction touristique'
+        ])
         ->whereNotNull('photo')
         ->where('photo', '!=', '')
-        ->orderBy('id', 'asc')   
+        ->orderBy('id', 'asc')
         ->take(6)
         ->get();
 
@@ -55,9 +58,13 @@ class AttractionController extends Controller
     }
 
     // Cas Visiteur / Utilisateur
-   $attractions = Attraction::where('type', '!=', 'Excursion')
+$attractions = Attraction::whereNotIn('type', [
+        'Excursion',
+        'Attraction touristique'
+    ])
     ->whereNotNull('photo')
     ->where('photo', '!=', '')
+    ->orderBy('id', 'asc')
     ->paginate(12)
     ->withQueryString();
 
@@ -242,9 +249,13 @@ if ($request->hasFile('image')) {
     @unlink($fullPath);
 }
 
-    $query = Attraction::query()
-        ->whereNotNull('photo')
-        ->where('photo', '!=', '');
+   $query = Attraction::query()
+    ->whereNotIn('type', [
+        'Excursion',
+        'Attraction touristique'
+    ])
+    ->whereNotNull('photo')
+    ->where('photo', '!=', '');
 
     if ($request->filled('prompt')) {
 
@@ -317,25 +328,7 @@ if ($request->hasFile('image')) {
             $query->where('type','Site historique');
 
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tourist Attractions
-        |--------------------------------------------------------------------------
-        */
-        elseif (
-            str_contains($prompt,'mosque') ||
-            str_contains($prompt,'medina') ||
-            str_contains($prompt,'market') ||
-            str_contains($prompt,'square') ||
-            str_contains($prompt,'souk') ||
-            str_contains($prompt,'tourist') ||
-            str_contains($prompt,'visit')
-        ) {
-
-            $query->where('type','Attraction touristique');
-
-        }
+         
 
         /*
         |--------------------------------------------------------------------------
@@ -438,16 +431,20 @@ if ($recommendations->count() > 1) {
     $type = $plural[$type] ?? $type;
 }
     // Si aucun résultat n'est trouvé, afficher 6 attractions aléatoires
-    if ($recommendations->isEmpty()) {
+   if ($recommendations->isEmpty()) {
 
-        $recommendations = Attraction::with('images')
-              ->whereNotNull('photo')
-              ->where('photo','!=','')
-              ->inRandomOrder()
-              ->take(6)
-              ->get();
+    $recommendations = Attraction::with('images')
+        ->whereNotIn('type', [
+            'Excursion',
+            'Attraction touristique'
+        ])
+        ->whereNotNull('photo')
+        ->where('photo','!=','')
+        ->inRandomOrder()
+        ->take(6)
+        ->get();
 
-    }
+}
          $aiMessage = __('find_attraction.ai_message', [
          'type' => $type,
 ]);
@@ -478,20 +475,28 @@ if ($request->filled('prompt') && $request->hasFile('image')) {
     // Si l'intersection est vide, on garde les résultats visuels
     if ($results->isEmpty()) {
 
-        $results = $visualResults;
+    $results = $visualResults
+        ->filter(function ($item) {
+            return !in_array($item->type, [
+                'Excursion',
+                'Attraction touristique'
+            ]);
+        })
+        ->values();
 
-    }
+}
 
 }
 elseif ($request->hasFile('image')) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Recherche visuelle uniquement
-    |--------------------------------------------------------------------------
-    */
-
-    $results = $visualResults;
+    $results = $visualResults
+        ->filter(function ($item) {
+            return !in_array($item->type, [
+                'Excursion',
+                'Attraction touristique'
+            ]);
+        })
+        ->values();
 
 }
 else {
